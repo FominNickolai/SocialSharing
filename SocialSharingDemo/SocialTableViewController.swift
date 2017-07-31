@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Social
 
 class SocialTableViewController: UITableViewController {
 
@@ -60,7 +61,22 @@ class SocialTableViewController: UITableViewController {
         
         // Display the share menu
         let shareMenu = UIAlertController(title: nil, message: "Share using", preferredStyle: .actionSheet)
-        let twitterAction = UIAlertAction(title: "Twitter", style: UIAlertActionStyle.default, handler: nil)
+        let twitterAction = UIAlertAction(title: "Twitter", style: UIAlertActionStyle.default, handler: { action in
+            guard SLComposeViewController.isAvailable(forServiceType: SLServiceTypeTwitter) else {
+                let alertMessage = UIAlertController(title: "Twitter Unavailable", message: "You haven't registered your Twitter account.", preferredStyle: .alert)
+                alertMessage.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
+                self.present(alertMessage, animated: true, completion: nil)
+                
+                return
+            }
+            //Display Tweet Composer
+            if let tweetComposer = SLComposeViewController(forServiceType: SLServiceTypeTwitter) {
+                tweetComposer.setInitialText("Having lunch at " + self.restaurantNames[indexPath.row])
+                tweetComposer.add(UIImage(named: self.restaurantImages[indexPath.row]))
+                self.present(tweetComposer, animated: true, completion: nil)
+            }
+            
+        })
         let facebookAction = UIAlertAction(title: "Facebook", style: UIAlertActionStyle.default, handler: nil)
         let cancelAction = UIAlertAction(title: "Cancel", style: UIAlertActionStyle.cancel, handler: nil)
         
